@@ -202,7 +202,7 @@ public class CVC5NativeAPITest {
     assertThat(e.toString())
         .contains(
             "Invalid argument '((_ int2bv 32) (to_int (/ 1 4)))' for 'val', expected bit-vector"
-                + " constant");
+                + " value");
   }
 
   @Test
