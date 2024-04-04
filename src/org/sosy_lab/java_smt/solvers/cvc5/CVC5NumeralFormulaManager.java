@@ -31,7 +31,7 @@ import org.sosy_lab.java_smt.basicimpl.AbstractNumeralFormulaManager;
 abstract class CVC5NumeralFormulaManager<
         ParamFormulaType extends NumeralFormula, ResultFormulaType extends NumeralFormula>
     extends AbstractNumeralFormulaManager<
-    Term, Sort, TermManager, ParamFormulaType, ResultFormulaType, Term> {
+        Term, Sort, TermManager, ParamFormulaType, ResultFormulaType, Term> {
 
   /**
    * CVC4 fails hard when creating Integers/Rationals instead of throwing an exception for invalid

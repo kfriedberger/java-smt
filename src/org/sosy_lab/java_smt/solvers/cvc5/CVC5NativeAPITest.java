@@ -149,7 +149,7 @@ public class CVC5NativeAPITest {
     // Op test
     assertThat(equality.getOp().toString()).isEqualTo("EQUAL");
     assertThat(
-        termManager.mkTerm(equality.getOp(), intVar, termManager.mkInteger(1)).getId()
+            termManager.mkTerm(equality.getOp(), intVar, termManager.mkInteger(1)).getId()
                 == equality.getId())
         .isTrue();
     // Note that variables (Kind.VARIABLES) are bound variables!
@@ -170,7 +170,7 @@ public class CVC5NativeAPITest {
     // arity 1
     assertThat(uf1.getSort().getFunctionArity()).isEqualTo(1);
     // apply the uf, the kind is now APPLY_UF
-    Term appliedUf1 = termManager.mkTerm(Kind.APPLY_UF, new Term[]{uf1, intVar});
+    Term appliedUf1 = termManager.mkTerm(Kind.APPLY_UF, new Term[] {uf1, intVar});
     assertThat(appliedUf1.getKind()).isNotEqualTo(Kind.VARIABLE);
     assertThat(appliedUf1.getKind()).isNotEqualTo(Kind.CONSTANT);
     assertThat(appliedUf1.getKind()).isEqualTo(Kind.APPLY_UF);
@@ -551,7 +551,7 @@ public class CVC5NativeAPITest {
   public void checkGetModelUnsat() {
     Term assertion = termManager.mkBoolean(false);
     solver.assertFormula(assertion);
-    Sort[] sorts = new Sort[]{termManager.getBooleanSort()};
+    Sort[] sorts = new Sort[] {termManager.getBooleanSort()};
     Term[] terms = new Term[] {assertion};
     Result result = solver.checkSat();
     assertThat(result.isSat()).isFalse();
@@ -572,7 +572,7 @@ public class CVC5NativeAPITest {
   public void checkGetModelSatInvalidSort() {
     Term assertion = termManager.mkBoolean(true);
     solver.assertFormula(assertion);
-    Sort[] sorts = new Sort[]{termManager.getBooleanSort()};
+    Sort[] sorts = new Sort[] {termManager.getBooleanSort()};
     Term[] terms = new Term[] {assertion};
     Result result = solver.checkSat();
     assertThat(result.isSat()).isTrue();

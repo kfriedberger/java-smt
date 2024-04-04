@@ -680,7 +680,7 @@ public class CVC5FormulaCreator extends FormulaCreator<Term, Sort, TermManager, 
 
       if (pDeclaration.hasOp()) {
         Op op = pDeclaration.getOp();
-        return termManager.mkTerm(op, pArgs.toArray(new Term[]{}));
+        return termManager.mkTerm(op, pArgs.toArray(new Term[] {}));
       } else {
         try {
           Sort[] paramSorts = pDeclaration.getSort().getFunctionDomainSorts();
@@ -691,7 +691,7 @@ public class CVC5FormulaCreator extends FormulaCreator<Term, Sort, TermManager, 
             kind = Kind.APPLY_UF;
             args.add(0, pDeclaration);
           }
-          return termManager.mkTerm(kind, args.toArray(new Term[]{}));
+          return termManager.mkTerm(kind, args.toArray(new Term[] {}));
         } catch (CVC5ApiException e) {
           throw new IllegalArgumentException(
               "Failure when building the UF '"
