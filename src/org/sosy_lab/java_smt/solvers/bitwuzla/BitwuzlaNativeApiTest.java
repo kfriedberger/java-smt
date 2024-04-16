@@ -877,8 +877,10 @@ public class BitwuzlaNativeApiTest {
               Kind.FP_TO_FP_FROM_BV, bv, float32.fp_exp_size(), float32.fp_sig_size());
 
       Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
-      bitwuzla.assert_formula(assertion);
+      prover.assert_formula(assertion);
+
+      assertThat(prover.check_sat()).isEqualTo(Result.SAT);
     }
-    assertThat(bitwuzla.check_sat()).isEqualTo(Result.SAT);
+    prover.delete();
   }
 }
