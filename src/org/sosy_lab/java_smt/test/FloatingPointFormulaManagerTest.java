@@ -783,6 +783,40 @@ public class FloatingPointFormulaManagerTest
   }
 
   @Test
+  public void checkIeeeBv2FpConversion32Broken() throws SolverException, InterruptedException {
+    // Same as checkIeeeBv2FpConversion32, but in one function
+    // Takes 70 seconds
+    for (float f : getListOfFloats()) {
+      try (ProverEnvironment prover = context.newProverEnvironment()) {
+        FloatingPointFormula f1 = fpmgr.makeNumber(f, singlePrecType);
+        FloatingPointFormula f2 = fpmgr.fromIeeeBitvector(
+            bvmgr.makeBitvector(32, Float.floatToRawIntBits(f)),
+            singlePrecType);
+
+        prover.addConstraint(fpmgr.equalWithFPSemantics(f1, f2));
+        assertThat(prover).isSatisfiable();
+      }
+    }
+  }
+
+  @Test
+  public void checkIeeeBv2FpConversion32Fixed() throws SolverException, InterruptedException {
+    // Fixed version of checkIeeeBv2FpConversion32 that only creates one ProverEnvironment
+    // Takes 1 seconds
+    try (ProverEnvironment prover = context.newProverEnvironment()) {
+      for (float f : getListOfFloats()) {
+        FloatingPointFormula f1 = fpmgr.makeNumber(f, singlePrecType);
+        FloatingPointFormula f2 = fpmgr.fromIeeeBitvector(
+            bvmgr.makeBitvector(32, Float.floatToRawIntBits(f)),
+            singlePrecType);
+
+        prover.addConstraint(fpmgr.equalWithFPSemantics(f1, f2));
+      }
+      assertThat(prover).isSatisfiable();
+    }
+  }
+
+  @Test
   public void checkIeeeBv2FpConversion64() throws SolverException, InterruptedException {
     for (double d : getListOfDoubles()) {
       checkBV2FP(
