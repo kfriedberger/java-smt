@@ -829,6 +829,7 @@ public class BitwuzlaNativeApiTest {
           termManager.mk_term(
               Kind.FP_TO_FP_FROM_BV, bv, float32.fp_exp_size(), float32.fp_sig_size());
 
+      // Assert that f = to_fp(f.bits)
       Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
       prover.assert_formula(assertion);
 
@@ -852,6 +853,7 @@ public class BitwuzlaNativeApiTest {
           Kind.FP_NEG,
           termManager.mk_fp_value(float32, rm, BigDecimal.valueOf(-f).toPlainString()));
 
+      // Assert that f = fp_negate(-f)
       Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
       prover.assert_formula(assertion);
 
@@ -876,11 +878,34 @@ public class BitwuzlaNativeApiTest {
           termManager.mk_term(
               Kind.FP_TO_FP_FROM_BV, bv, float32.fp_exp_size(), float32.fp_sig_size());
 
+      // Assert that f = to_fp(f.bits)
       Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
       prover.assert_formula(assertion);
 
       assertThat(prover.check_sat()).isEqualTo(Result.SAT);
     }
     prover.delete();
+  }
+
+  @Test
+  public void checkIeeeBv2FpConversion32AlsoFixed() {
+    // Demonstrates that the issue is still tied to floating point values
+    // Takes 6 seconds
+    for (float f : getListOfFloats()) {
+      Bitwuzla prover = new Bitwuzla(termManager, createOptions());
+
+      Sort bv32 = termManager.mk_bv_sort(32);
+      Term b1 = termManager.mk_bv_value_int64(bv32, Float.floatToRawIntBits(f));
+      Term b2 = termManager.mk_term(
+          Kind.BV_NOT,termManager.mk_bv_value_int64(bv32,
+              ~Float.floatToRawIntBits(f)));
+
+      // Assert that f.bits = bv_negate(~f.bits)
+      Term assertion = termManager.mk_term(Kind.EQUAL, b1, b2);
+      prover.assert_formula(assertion);
+
+      assertThat(prover.check_sat()).isEqualTo(Result.SAT);
+      prover.delete();
+    }
   }
 }
