@@ -815,7 +815,7 @@ public class BitwuzlaNativeApiTest {
   @Test
   public void checkIeeeBv2FpConversion32Broken() {
     // Translation of checkIeeeBv2FpConversion32Broken from FloatingpointFormulaManager
-    // Takes 2 seconds
+    // Takes 60 seconds
     for (float f : getListOfFloats()) {
       Bitwuzla prover = new Bitwuzla(termManager, createOptions());
 
@@ -831,10 +831,10 @@ public class BitwuzlaNativeApiTest {
               Kind.FP_TO_FP_FROM_BV, bv, float32.fp_exp_size(), float32.fp_sig_size());
 
       Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
-      ;
-      bitwuzla.assert_formula(assertion);
+      prover.assert_formula(assertion);
 
-      assertThat(bitwuzla.check_sat()).isEqualTo(Result.SAT);
+      assertThat(prover.check_sat()).isEqualTo(Result.SAT);
+      prover.delete();
     }
   }
 
