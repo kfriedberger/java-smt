@@ -789,9 +789,9 @@ public class FloatingPointFormulaManagerTest
     for (float f : getListOfFloats()) {
       try (ProverEnvironment prover = context.newProverEnvironment()) {
         FloatingPointFormula f1 = fpmgr.makeNumber(f, singlePrecType);
-        FloatingPointFormula f2 = fpmgr.fromIeeeBitvector(
-            bvmgr.makeBitvector(32, Float.floatToRawIntBits(f)),
-            singlePrecType);
+        FloatingPointFormula f2 =
+            fpmgr.fromIeeeBitvector(
+                bvmgr.makeBitvector(32, Float.floatToRawIntBits(f)), singlePrecType);
 
         prover.addConstraint(fpmgr.equalWithFPSemantics(f1, f2));
         assertThat(prover).isSatisfiable();
@@ -806,9 +806,9 @@ public class FloatingPointFormulaManagerTest
     try (ProverEnvironment prover = context.newProverEnvironment()) {
       for (float f : getListOfFloats()) {
         FloatingPointFormula f1 = fpmgr.makeNumber(f, singlePrecType);
-        FloatingPointFormula f2 = fpmgr.fromIeeeBitvector(
-            bvmgr.makeBitvector(32, Float.floatToRawIntBits(f)),
-            singlePrecType);
+        FloatingPointFormula f2 =
+            fpmgr.fromIeeeBitvector(
+                bvmgr.makeBitvector(32, Float.floatToRawIntBits(f)), singlePrecType);
 
         prover.addConstraint(fpmgr.equalWithFPSemantics(f1, f2));
       }

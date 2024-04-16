@@ -103,10 +103,10 @@ public class BitwuzlaNativeApiTest {
     assertThat(tru12.is_true()).isTrue();
 
     new Thread(
-        () -> {
-          assertThat(tru1.is_true()).isTrue();
-          assertThat(tru12.is_true()).isTrue();
-        })
+            () -> {
+              assertThat(tru1.is_true()).isTrue();
+              assertThat(tru12.is_true()).isTrue();
+            })
         .start();
   }
 
@@ -792,7 +792,7 @@ public class BitwuzlaNativeApiTest {
             -2f);
     flts.add(-0.0f); // MathSat5 fails for NEGATIVE_ZERO
 
-    final int stepSize = 1;//solverToUse() == Solvers.BITWUZLA ? 10 : 1;
+    final int stepSize = 1; // solverToUse() == Solvers.BITWUZLA ? 10 : 1;
     for (int i = 1; i < 20; i += stepSize) {
       for (int j = 1; j < 20; j += stepSize) {
         flts.add((float) (i * Math.pow(10, j)));
@@ -800,7 +800,7 @@ public class BitwuzlaNativeApiTest {
       }
     }
 
-    final int numRandom = 100; //solverToUse() == Solvers.BITWUZLA ? 5 :NUM_RANDOM_TESTS;
+    final int numRandom = 100; // solverToUse() == Solvers.BITWUZLA ? 5 :NUM_RANDOM_TESTS;
     Random rand = new Random(0);
     for (int i = 0; i < numRandom; i++) {
       float flt = Float.intBitsToFloat(rand.nextInt());
@@ -826,11 +826,9 @@ public class BitwuzlaNativeApiTest {
 
       Sort bv32 = termManager.mk_bv_sort(32);
       Term bv = termManager.mk_bv_value_int64(bv32, Float.floatToRawIntBits(f));
-      Term f2 = termManager.mk_term(
-          Kind.FP_TO_FP_FROM_BV,
-          bv,
-          float32.fp_exp_size(),
-          float32.fp_sig_size());
+      Term f2 =
+          termManager.mk_term(
+              Kind.FP_TO_FP_FROM_BV, bv, float32.fp_exp_size(), float32.fp_sig_size());
 
       Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
       ;
@@ -853,11 +851,9 @@ public class BitwuzlaNativeApiTest {
 
       Sort bv32 = termManager.mk_bv_sort(32);
       Term bv = termManager.mk_bv_value_int64(bv32, Float.floatToRawIntBits(f));
-      Term f2 = termManager.mk_term(
-          Kind.FP_TO_FP_FROM_BV,
-          bv,
-          float32.fp_exp_size(),
-          float32.fp_sig_size());
+      Term f2 =
+          termManager.mk_term(
+              Kind.FP_TO_FP_FROM_BV, bv, float32.fp_exp_size(), float32.fp_sig_size());
 
       Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
       ;
