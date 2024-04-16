@@ -10,7 +10,11 @@ package org.sosy_lab.java_smt.solvers.bitwuzla;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.collect.Lists;
 import com.google.common.truth.Truth;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Random;
 import org.junit.After;
 import org.junit.AssumptionViolatedException;
 import org.junit.Before;
@@ -99,10 +103,10 @@ public class BitwuzlaNativeApiTest {
     assertThat(tru12.is_true()).isTrue();
 
     new Thread(
-            () -> {
-              assertThat(tru1.is_true()).isTrue();
-              assertThat(tru12.is_true()).isTrue();
-            })
+        () -> {
+          assertThat(tru1.is_true()).isTrue();
+          assertThat(tru12.is_true()).isTrue();
+        })
         .start();
   }
 
@@ -768,5 +772,97 @@ public class BitwuzlaNativeApiTest {
     // invalid/fails
     String badInput = "(declare-const a Bool)(assert (or a b))";
     parse(badInput);
+  }
+
+  private List<Float> getListOfFloats() {
+    List<Float> flts =
+        Lists.newArrayList(
+            2.139922e-34f, // normal
+            8.345803E-39f, // subnormal
+            // Float.NaN, // NaN is no unique bitvector
+            Float.MIN_NORMAL,
+            Float.MIN_VALUE,
+            Float.MAX_VALUE,
+            //      Float.POSITIVE_INFINITY,
+            //      Float.NEGATIVE_INFINITY,
+            0.0f,
+            1f,
+            -1f,
+            2f,
+            -2f);
+    flts.add(-0.0f); // MathSat5 fails for NEGATIVE_ZERO
+
+    final int stepSize = 1;//solverToUse() == Solvers.BITWUZLA ? 10 : 1;
+    for (int i = 1; i < 20; i += stepSize) {
+      for (int j = 1; j < 20; j += stepSize) {
+        flts.add((float) (i * Math.pow(10, j)));
+        flts.add((float) (-i * Math.pow(10, j)));
+      }
+    }
+
+    final int numRandom = 100; //solverToUse() == Solvers.BITWUZLA ? 5 :NUM_RANDOM_TESTS;
+    Random rand = new Random(0);
+    for (int i = 0; i < numRandom; i++) {
+      float flt = Float.intBitsToFloat(rand.nextInt());
+      if (!Float.isNaN(flt)) {
+        flts.add(flt);
+      }
+    }
+
+    return flts;
+  }
+
+  @Test
+  public void checkIeeeBv2FpConversion32Broken() {
+    // Translation of checkIeeeBv2FpConversion32Broken from FloatingpointFormulaManager
+    // Takes 2 seconds
+    for (float f : getListOfFloats()) {
+      Bitwuzla prover = new Bitwuzla(termManager, createOptions());
+
+      Sort float32 = termManager.mk_fp_sort(8, 24);
+      Term rm = termManager.mk_rm_value(RoundingMode.RNE);
+
+      Term f1 = termManager.mk_fp_value(float32, rm, new BigDecimal(f).toPlainString());
+
+      Sort bv32 = termManager.mk_bv_sort(32);
+      Term bv = termManager.mk_bv_value_int64(bv32, Float.floatToRawIntBits(f));
+      Term f2 = termManager.mk_term(
+          Kind.FP_TO_FP_FROM_BV,
+          bv,
+          float32.fp_exp_size(),
+          float32.fp_sig_size());
+
+      Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
+      ;
+      bitwuzla.assert_formula(assertion);
+
+      assertThat(bitwuzla.check_sat()).isEqualTo(Result.SAT);
+    }
+  }
+
+  @Test
+  public void checkIeeeBv2FpConversion32Fixed() {
+    // Translation of checkIeeeBv2FpConversion32Fixed from FloatingpointFormulaManager
+    // Takes 1.5 seconds
+    Bitwuzla prover = new Bitwuzla(termManager, createOptions());
+    for (float f : getListOfFloats()) {
+      Sort float32 = termManager.mk_fp_sort(8, 24);
+      Term rm = termManager.mk_rm_value(RoundingMode.RNE);
+
+      Term f1 = termManager.mk_fp_value(float32, rm, new BigDecimal(f).toPlainString());
+
+      Sort bv32 = termManager.mk_bv_sort(32);
+      Term bv = termManager.mk_bv_value_int64(bv32, Float.floatToRawIntBits(f));
+      Term f2 = termManager.mk_term(
+          Kind.FP_TO_FP_FROM_BV,
+          bv,
+          float32.fp_exp_size(),
+          float32.fp_sig_size());
+
+      Term assertion = termManager.mk_term(Kind.FP_EQUAL, f1, f2);
+      ;
+      bitwuzla.assert_formula(assertion);
+    }
+    assertThat(bitwuzla.check_sat()).isEqualTo(Result.SAT);
   }
 }
