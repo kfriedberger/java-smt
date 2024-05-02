@@ -300,7 +300,6 @@ namespace bitwuzla {
   }
 }
 %ignore Bitwuzla::statistics () const;
-%ignore Bitwuzla::simplify ();
 }
 
 %include "include/bitwuzla/cpp/bitwuzla.h"
